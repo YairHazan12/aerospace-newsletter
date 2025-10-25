@@ -75,7 +75,13 @@ def send_email_with_articles(articles):
     smtp_port = 587
     sender_email = os.getenv("GMAIL_EMAIL")
     sender_password = os.getenv("GMAIL_APP_PASSWORD")  # Use App Password, not regular password
-    recipient_email = os.getenv("TO_EMAIL")
+    recipient_email = os.getenv("TO_EMAIL", "felihazan@gmail.com")
+    
+    # Debug information
+    print(f"📧 Email configuration:")
+    print(f"  • Sender: {sender_email}")
+    print(f"  • Recipient: {recipient_email}")
+    print(f"  • Password set: {'Yes' if sender_password else 'No'}")
     
     if not sender_email or not sender_password:
         print("❌ Gmail credentials not found!")
@@ -86,6 +92,11 @@ def send_email_with_articles(articles):
         print("  1. Go to Google Account settings")
         print("  2. Security > 2-Step Verification > App passwords")
         print("  3. Generate a new app password for 'Mail'")
+        return False
+    
+    if not recipient_email:
+        print("❌ Recipient email not found!")
+        print("📝 Please set TO_EMAIL environment variable or use default: felihazan@gmail.com")
         return False
     
     # Format content for email
@@ -110,15 +121,35 @@ def send_email_with_articles(articles):
         print("📧 Connecting to Gmail SMTP server...")
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()  # Enable TLS encryption
+        print("🔐 Authenticating with Gmail...")
         server.login(sender_email, sender_password)
         
         # Send email
         print("📤 Sending email...")
+        print(f"  • From: {sender_email}")
+        print(f"  • To: {recipient_email}")
+        print(f"  • Subject: Latest Aerospace & Defense News")
+        
         server.sendmail(sender_email, recipient_email, message.as_string())
         server.quit()
         
         print("✅ Articles sent successfully to recipient email!")
         return True
+        
+    except smtplib.SMTPAuthenticationError as e:
+        print("❌ Authentication failed!")
+        print("📝 This usually means:")
+        print("  • Wrong Gmail App Password")
+        print("  • 2-Factor Authentication not enabled")
+        print("  • App Password not generated for 'Mail'")
+        print(f"  • Error: {str(e)}")
+        return False
+        
+    except smtplib.SMTPRecipientsRefused as e:
+        print("❌ Recipient email rejected!")
+        print(f"📝 Invalid recipient email: {recipient_email}")
+        print(f"  • Error: {str(e)}")
+        return False
         
     except Exception as e:
         print("❌ Failed to send email")
