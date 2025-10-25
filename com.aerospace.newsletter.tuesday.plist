@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.aerospace.newsletter.tuesday</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/yairhazan/projects/aerospace_newsletter/run_newsletter.sh</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>2</integer>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/yairhazan/projects/aerospace_newsletter/logs/newsletter_tuesday.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/yairhazan/projects/aerospace_newsletter/logs/newsletter_tuesday_error.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>GMAIL_EMAIL</key>
+        <string>your_email@gmail.com</string>
+        <key>GMAIL_APP_PASSWORD</key>
+        <string>your_app_password</string>
+    </dict>
+</dict>
+</plist>

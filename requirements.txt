@@ -1,0 +1,9 @@
+# Aerospace Newsletter Dependencies
+# Core RSS parsing
+feedparser==6.0.12
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Email functionality (SMTP is built into Python)
+# No additional email libraries needed for SMTP
