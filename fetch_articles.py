@@ -76,7 +76,9 @@ def send_email_with_articles(articles):
     sender_email = os.getenv("GMAIL_EMAIL")
     sender_password = os.getenv("GMAIL_APP_PASSWORD")  # Use App Password, not regular password
     recipient_email = os.getenv("TO_EMAIL", "felihazan@gmail.com")
-    
+    print("os.getenv('TO_EMAIL'): ", os.getenv("TO_EMAIL"))
+    print("recipient_email: ", recipient_email)
+
     # Debug information
     print(f"📧 Email configuration:")
     print(f"  • Sender: {sender_email}")
