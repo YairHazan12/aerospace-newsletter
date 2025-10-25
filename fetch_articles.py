@@ -75,7 +75,7 @@ def send_email_with_articles(articles):
     smtp_port = 587
     sender_email = os.getenv("GMAIL_EMAIL")
     sender_password = os.getenv("GMAIL_APP_PASSWORD")  # Use App Password, not regular password
-    recipient_email = "felihazan@gmail.com"
+    recipient_email = os.getenv("TO_EMAIL")
     
     if not sender_email or not sender_password:
         print("❌ Gmail credentials not found!")
@@ -117,7 +117,7 @@ def send_email_with_articles(articles):
         server.sendmail(sender_email, recipient_email, message.as_string())
         server.quit()
         
-        print("✅ Articles sent successfully to felihazan@gmail.com!")
+        print("✅ Articles sent successfully to recipient email!")
         return True
         
     except Exception as e:
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         success = send_email_with_articles(articles)
         
         if success:
-            print(f"\n🎉 Successfully fetched and sent {len(articles)} articles to felihazan@gmail.com!")
+            print(f"\n🎉 Successfully fetched and sent {len(articles)} articles to recipient email!")
         else:
             print("❌ Failed to send articles via email.")
     else:
