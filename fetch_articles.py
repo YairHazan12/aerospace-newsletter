@@ -12,9 +12,10 @@ load_dotenv()
 # Step 1: Gather latest news
 FEEDS = [
     "https://www.defensenews.com/rss/",
-    "https://www.flightglobal.com/rss",
     "https://breakingdefense.com/feed/",
-    "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+    "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+    "https://dronelife.com/feed",
+    "https://news.mit.edu/topic/drones"
 ]
 
 def fetch_latest_articles(limit_per_feed=5):
