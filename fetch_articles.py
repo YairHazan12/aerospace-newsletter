@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
+# Load the environment variables
 load_dotenv()
 
 # Step 1: Gather latest news
