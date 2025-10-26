@@ -2,8 +2,11 @@ name: 🛰️ Aerospace Newsletter
 
 on:
   schedule:
-    - cron: '17 12 * * SUN'
-    - cron: '0 7 * * SUN-THU'
+    # Run daily Sunday to Thursday at 7 AM UTC (9 AM Israel time)
+    # Sunday=0, Monday=1, Tuesday=2, Wednesday=3, Thursday=4
+    - cron: '0 7 * * 0,1,2,3,4'
+    # Backup schedule with slight delay to ensure execution
+    - cron: '41 12 * * 0,1,2,3,4'
   workflow_dispatch: # Allow manual triggers from GitHub UI
   push:
     branches: [ main, master ]
