@@ -27,12 +27,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
+    - name: 🧪 Test imports
+      run: |
+        python test_imports.py
+        
     - name: 🛰️ Send Newsletter
       env:
         GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        TO_EMAIL: ${{ secrets.TO_EMAIL }}
       run: |
         echo "🚀 Starting newsletter automation..."
+        echo "📧 Environment variables:"
+        echo "  • GMAIL_EMAIL: $GMAIL_EMAIL"
+        echo "  • TO_EMAIL: $TO_EMAIL"
+        echo "  • GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD:+[SET]}"
         python fetch_articles.py
         echo "✅ Newsletter process completed"
         
