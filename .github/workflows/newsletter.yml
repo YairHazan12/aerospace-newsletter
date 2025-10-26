@@ -5,7 +5,7 @@ on:
     # Run daily Sunday to Thursday at 7 AM UTC (9 AM Israel time)
     # Sunday=0, Monday=1, Tuesday=2, Wednesday=3, Thursday=4
     
-    - cron: '53 10 * * SUN'
+    - cron: '05 11 * * SUN'
     - cron: '0 7 * * SUN-THU'
   workflow_dispatch: # Allow manual triggers from GitHub UI
   push:
