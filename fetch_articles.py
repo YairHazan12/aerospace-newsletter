@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import logging
+from email_manager import EmailManager
 
 # Configure logging
 logging.basicConfig(
@@ -60,18 +61,12 @@ def fetch_latest_articles(limit_per_feed=5):
 
 
 def send_email_with_articles(articles):
-    """Send articles via email using SMTP (Gmail)"""
+    """Send articles via email using SMTP (Gmail) to all subscribers"""
     # Email configuration
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
     sender_email = os.getenv("GMAIL_EMAIL")
     sender_password = os.getenv("GMAIL_APP_PASSWORD")  # Use App Password, not regular password
-    recipient_email = os.getenv("TO_EMAIL")
-    logger.debug(f"TO_EMAIL env var: {os.getenv('TO_EMAIL')}")
-    logger.debug(f"recipient_email: {recipient_email}")
-
-    # Debug information
-    logger.info(f"📧 Sending to: {recipient_email}")
     
     if not sender_email or not sender_password:
         logger.error("❌ Gmail credentials not found!")
@@ -84,27 +79,20 @@ def send_email_with_articles(articles):
         logger.info("  3. Generate a new app password for 'Mail'")
         return False
     
-    if not recipient_email:
-        logger.error("❌ Recipient email not found!")
-        logger.error("📝 Please set TO_EMAIL environment variable or use default: felihazan@gmail.com")
+    # Get subscribers from email manager
+    email_manager = EmailManager()
+    subscribers = email_manager.get_active_subscribers()
+    
+    if not subscribers:
+        logger.warning("⚠️ No active subscribers found!")
+        logger.info("📝 Add subscribers via the web interface or manually")
         return False
+    
+    logger.info(f"📧 Sending to {len(subscribers)} subscribers")
     
     # Format content for email
     html_content = format_articles_for_email(articles)
     text_content = format_articles_for_text(articles)
-    
-    # Create email message
-    message = MIMEMultipart("alternative")
-    message["Subject"] = "Latest Aerospace & Defense News"
-    message["From"] = sender_email
-    message["To"] = recipient_email
-    
-    # Add both text and HTML versions
-    text_part = MIMEText(text_content, "plain")
-    html_part = MIMEText(html_content, "html")
-    
-    message.attach(text_part)
-    message.attach(html_part)
     
     try:
         # Connect to Gmail SMTP server
@@ -114,14 +102,38 @@ def send_email_with_articles(articles):
         logger.info("🔐 Authenticating with Gmail...")
         server.login(sender_email, sender_password)
         
-        # Send email
-        logger.info("📤 Sending email...")
+        # Send email to each subscriber
+        successful_sends = 0
+        failed_sends = 0
         
-        server.sendmail(sender_email, recipient_email, message.as_string())
+        for subscriber in subscribers:
+            try:
+                # Create personalized email message
+                message = MIMEMultipart("alternative")
+                message["Subject"] = "Latest Aerospace & Defense News"
+                message["From"] = sender_email
+                message["To"] = subscriber['email']
+                
+                # Add both text and HTML versions
+                text_part = MIMEText(text_content, "plain")
+                html_part = MIMEText(html_content, "html")
+                
+                message.attach(text_part)
+                message.attach(html_part)
+                
+                # Send email
+                server.sendmail(sender_email, subscriber['email'], message.as_string())
+                successful_sends += 1
+                logger.info(f"✅ Sent to: {subscriber['email']}")
+                
+            except Exception as e:
+                failed_sends += 1
+                logger.error(f"❌ Failed to send to {subscriber['email']}: {e}")
+        
         server.quit()
         
-        logger.info("✅ Articles sent successfully to recipient email!")
-        return True
+        logger.info(f"📊 Email sending complete: {successful_sends} successful, {failed_sends} failed")
+        return successful_sends > 0
         
     except smtplib.SMTPAuthenticationError as e:
         logger.error("❌ Authentication failed!")
