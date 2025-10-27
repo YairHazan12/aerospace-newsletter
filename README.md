@@ -116,6 +116,37 @@ python manage_subscribers.py stats
 - **Manual test**: Actions → Run workflow
 - **Update script**: Edit locally, commit, push
 
+## 🚀 GitHub Deployment
+
+### Quick Deploy
+```bash
+# Run the deployment script
+./deploy_to_github.sh
+```
+
+### Manual Deploy
+1. **Merge to main branch:**
+   ```bash
+   git checkout main
+   git merge feature/newsletter-signup
+   git push origin main
+   ```
+
+2. **Enable GitHub Pages:**
+   - Go to repository Settings → Pages
+   - Source: "GitHub Actions"
+   - Save
+
+3. **Set up secrets:**
+   - Go to Settings → Secrets and variables → Actions
+   - Add: `GMAIL_EMAIL` and `GMAIL_APP_PASSWORD`
+
+4. **Access your newsletter:**
+   - Signup: `https://yourusername.github.io/aerospace_newsletter/`
+   - Newsletter runs automatically on schedule
+
 ## 📖 Documentation
 
-See `SETUP.md` for detailed setup instructions.
+- `SETUP.md` - Basic setup instructions
+- `NEWSLETTER_SIGNUP.md` - Signup system documentation  
+- `DEPLOYMENT.md` - Complete deployment guide
