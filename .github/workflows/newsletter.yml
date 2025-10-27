@@ -27,8 +27,25 @@ jobs:
       env:
         GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
         GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        TO_EMAIL: ${{ secrets.TO_EMAIL }}
       run: |
         echo "🚀 Starting newsletter automation..."
+        echo "📧 Checking for subscribers..."
+        
+        # Check if subscribers exist
+        if [ -f "subscribers.json" ]; then
+          echo "✅ Found subscribers file"
+          python -c "
+          from email_manager import EmailManager
+          manager = EmailManager()
+          stats = manager.get_stats()
+          print(f'📊 Active subscribers: {stats[\"active_subscribers\"]}')
+          print(f'📊 Total subscribers: {stats[\"total_subscribers\"]}')
+          "
+        else
+          echo "⚠️ No subscribers file found, creating empty one"
+          echo '{"subscribers": [], "last_updated": "", "total_count": 0}' > subscribers.json
+        fi
+        
+        # Run the newsletter
         python fetch_articles.py
         echo "✅ Newsletter process completed"

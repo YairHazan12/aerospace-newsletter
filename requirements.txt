@@ -1,3 +1,4 @@
 # Aerospace Newsletter Dependencies
 feedparser==6.0.12
 python-dotenv==1.1.1
+flask==3.0.0

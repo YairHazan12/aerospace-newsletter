@@ -1,0 +1,21 @@
+{
+  "subscribers": [
+    {
+      "email": "test1@example.com",
+      "name": "Test User 1",
+      "subscribed_at": "2025-10-27T12:55:03.433047",
+      "active": false,
+      "unsubscribe_token": "b2d4ed502de5600a8be09563b7352b31",
+      "unsubscribed_at": "2025-10-27T12:55:03.450265"
+    },
+    {
+      "email": "test2@example.com",
+      "name": "Test User 2",
+      "subscribed_at": "2025-10-27T12:55:03.450146",
+      "active": true,
+      "unsubscribe_token": "5a481a2129f538e60b536500e7c68f56"
+    }
+  ],
+  "last_updated": "2025-10-27T12:55:03.450266",
+  "total_count": 2
+}

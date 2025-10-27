@@ -19,6 +19,7 @@ from fetch_articles import (
     format_articles_for_text,
     send_email_with_articles
 )
+from email_manager import EmailManager
 
 class TestNewsletter(unittest.TestCase):
     """Test cases for the newsletter functionality"""
@@ -102,24 +103,33 @@ class TestNewsletter(unittest.TestCase):
         """Test email sending with mocked SMTP"""
         with patch.dict(os.environ, {
             'GMAIL_EMAIL': 'test@gmail.com',
-            'GMAIL_APP_PASSWORD': 'test_password',
-            'TO_EMAIL': 'recipient@gmail.com'
+            'GMAIL_APP_PASSWORD': 'test_password'
         }):
-            with patch('fetch_articles.smtplib.SMTP') as mock_smtp:
-                mock_server = MagicMock()
-                mock_smtp.return_value = mock_server
+            # Mock the EmailManager to return test subscribers
+            with patch('fetch_articles.EmailManager') as mock_email_manager:
+                mock_manager_instance = MagicMock()
+                mock_manager_instance.get_active_subscribers.return_value = [
+                    {'email': 'test1@example.com', 'name': 'Test User 1'},
+                    {'email': 'test2@example.com', 'name': 'Test User 2'}
+                ]
+                mock_email_manager.return_value = mock_manager_instance
                 
-                result = send_email_with_articles(self.sample_articles)
-                
-                # Verify SMTP was called correctly
-                mock_smtp.assert_called_once_with('smtp.gmail.com', 587)
-                mock_server.starttls.assert_called_once()
-                mock_server.login.assert_called_once_with('test@gmail.com', 'test_password')
-                mock_server.sendmail.assert_called_once()
-                mock_server.quit.assert_called_once()
-                
-                self.assertTrue(result)
-                print("✅ Email sending (mocked) works correctly")
+                with patch('fetch_articles.smtplib.SMTP') as mock_smtp:
+                    mock_server = MagicMock()
+                    mock_smtp.return_value = mock_server
+                    
+                    result = send_email_with_articles(self.sample_articles)
+                    
+                    # Verify SMTP was called correctly
+                    mock_smtp.assert_called_once_with('smtp.gmail.com', 587)
+                    mock_server.starttls.assert_called_once()
+                    mock_server.login.assert_called_once_with('test@gmail.com', 'test_password')
+                    # Should be called twice (once for each subscriber)
+                    self.assertEqual(mock_server.sendmail.call_count, 2)
+                    mock_server.quit.assert_called_once()
+                    
+                    self.assertTrue(result)
+                    print("✅ Email sending (mocked) works correctly")
     
     def test_missing_credentials(self):
         """Test handling of missing credentials"""
@@ -127,6 +137,34 @@ class TestNewsletter(unittest.TestCase):
             result = send_email_with_articles(self.sample_articles)
             self.assertFalse(result)
             print("✅ Missing credentials handled correctly")
+    
+    def test_email_manager(self):
+        """Test email manager functionality"""
+        print("🧪 Testing EmailManager...")
+        
+        # Test subscription
+        manager = EmailManager("test_subscribers.json")
+        result = manager.subscribe("test@example.com", "Test User")
+        self.assertTrue(result['success'])
+        
+        # Test duplicate subscription
+        result2 = manager.subscribe("test@example.com", "Test User")
+        self.assertFalse(result2['success'])
+        
+        # Test unsubscription
+        result3 = manager.unsubscribe("test@example.com")
+        self.assertTrue(result3['success'])
+        
+        # Test stats
+        stats = manager.get_stats()
+        self.assertIn('active_subscribers', stats)
+        
+        # Clean up test file
+        import os
+        if os.path.exists("test_subscribers.json"):
+            os.remove("test_subscribers.json")
+        
+        print("✅ EmailManager functionality works correctly")
 
 def run_integration_test():
     """Run a full integration test (requires network)"""
