@@ -2,13 +2,8 @@ name: 🛰️ Aerospace Newsletter
 
 on:
   schedule:
-    # Run daily Sunday to Thursday at 7 AM UTC (9 AM Israel time)
-    # Sunday=0, Monday=1, Tuesday=2, Wednesday=3, Thursday=4
-    - cron: '0 7 * * 0-4'
-  workflow_dispatch: # Allow manual triggers from GitHub UI
-  push:
-    branches: [ main, master ]
-    paths: [ 'fetch_articles.py' ] # Only trigger on script changes
+    - cron: '0 9 * * 0-4'  # Tuesday and Friday at 9 AM UTC
+  workflow_dispatch:  # Allow manual triggers
 
 jobs:
   send-newsletter:
@@ -28,10 +23,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: 🧪 Test newsletter functionality
-      run: |
-        python quick_test.py
-        
     - name: 🛰️ Send Newsletter
       env:
         GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
@@ -39,19 +30,5 @@ jobs:
         TO_EMAIL: ${{ secrets.TO_EMAIL }}
       run: |
         echo "🚀 Starting newsletter automation..."
-        echo "📧 Environment variables:"
-        echo "  • GMAIL_EMAIL: $GMAIL_EMAIL"
-        echo "  • TO_EMAIL: $TO_EMAIL"
-        echo "  • GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD:+[SET]}"
         python fetch_articles.py
         echo "✅ Newsletter process completed"
-        
-    - name: 📊 Upload logs (if any)
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: newsletter-logs-${{ github.run_number }}
-        path: |
-          logs/
-          *.log
-        retention-days: 30

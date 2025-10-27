@@ -58,24 +58,6 @@ def fetch_latest_articles(limit_per_feed=5):
     logger.info(f"📊 Total articles fetched: {total_articles}")
     return articles
 
-def format_articles_for_output(articles):
-    """Format articles for text output"""
-    output_lines = []
-    output_lines.append("=" * 80)
-    output_lines.append("AEROSPACE & DEFENSE NEWS - LATEST ARTICLES")
-    output_lines.append("=" * 80)
-    output_lines.append(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    output_lines.append(f"Total articles: {len(articles)}")
-    output_lines.append("")
-    
-    for i, article in enumerate(articles, 1):
-        output_lines.append(f"{i}. {article['title']}")
-        output_lines.append(f"   Link: {article['link']}")
-        output_lines.append(f"   Published: {article['published']}")
-        output_lines.append(f"   Summary: {article['summary'][:200]}{'...' if len(article['summary']) > 200 else ''}")
-        output_lines.append("")
-    
-    return "\n".join(output_lines)
 
 def send_email_with_articles(articles):
     """Send articles via email using SMTP (Gmail)"""
@@ -89,10 +71,7 @@ def send_email_with_articles(articles):
     logger.debug(f"recipient_email: {recipient_email}")
 
     # Debug information
-    logger.info("📧 Email configuration:")
-    logger.info(f"  • Sender: {sender_email}")
-    logger.info(f"  • Recipient: {recipient_email}")
-    logger.info(f"  • Password set: {'Yes' if sender_password else 'No'}")
+    logger.info(f"📧 Sending to: {recipient_email}")
     
     if not sender_email or not sender_password:
         logger.error("❌ Gmail credentials not found!")
@@ -137,9 +116,6 @@ def send_email_with_articles(articles):
         
         # Send email
         logger.info("📤 Sending email...")
-        logger.info(f"  • From: {sender_email}")
-        logger.info(f"  • To: {recipient_email}")
-        logger.info(f"  • Subject: Latest Aerospace & Defense News")
         
         server.sendmail(sender_email, recipient_email, message.as_string())
         server.quit()
