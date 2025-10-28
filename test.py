@@ -19,7 +19,7 @@ from fetch_articles import (
     format_articles_for_text,
     send_email_with_articles
 )
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
 
 class TestNewsletter(unittest.TestCase):
     """Test cases for the newsletter functionality"""
@@ -143,7 +143,7 @@ class TestNewsletter(unittest.TestCase):
         print("🧪 Testing EmailManager...")
         
         # Test subscription
-        manager = EmailManager("test_subscribers.json")
+        manager = create_email_manager()
         result = manager.subscribe("test@example.com", "Test User")
         self.assertTrue(result['success'])
         

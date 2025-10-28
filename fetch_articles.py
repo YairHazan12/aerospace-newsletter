@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import logging
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
 
 # Configure logging
 logging.basicConfig(
@@ -79,8 +79,8 @@ def send_email_with_articles(articles):
         logger.info("  3. Generate a new app password for 'Mail'")
         return False
     
-    # Get subscribers from email manager
-    email_manager = EmailManager()
+    # Get subscribers from email manager (Firebase or JSON)
+    email_manager = create_email_manager()
     subscribers = email_manager.get_active_subscribers()
     
     if not subscribers:
