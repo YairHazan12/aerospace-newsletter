@@ -7,7 +7,7 @@ Simple web interface for newsletter subscription management
 import os
 import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
 import logging
 
 # Configure logging
@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-this')
 
-# Initialize email manager
-email_manager = EmailManager()
+# Initialize email manager (Firebase or JSON)
+email_manager = create_email_manager()
 
 @app.route('/')
 def index():

@@ -6,7 +6,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import logging
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
+from video_fetcher import fetch_featured_video, format_video_for_email_html, format_video_for_email_text
 
 # Configure logging
 logging.basicConfig(
@@ -79,8 +80,8 @@ def send_email_with_articles(articles):
         logger.info("  3. Generate a new app password for 'Mail'")
         return False
     
-    # Get subscribers from email manager
-    email_manager = EmailManager()
+    # Get subscribers from email manager (Firebase or JSON)
+    email_manager = create_email_manager()
     subscribers = email_manager.get_active_subscribers()
     
     if not subscribers:
@@ -90,9 +91,17 @@ def send_email_with_articles(articles):
     
     logger.info(f"📧 Sending to {len(subscribers)} subscribers")
     
+    # Fetch featured video
+    logger.info("🎬 Fetching featured video for newsletter...")
+    featured_video = fetch_featured_video()
+    if featured_video:
+        logger.info(f"✅ Featured video: {featured_video['title'][:60]}...")
+    else:
+        logger.warning("⚠️ No featured video found, sending without video")
+    
     # Format content for email
-    html_content = format_articles_for_email(articles)
-    text_content = format_articles_for_text(articles)
+    html_content = format_articles_for_email(articles, featured_video)
+    text_content = format_articles_for_text(articles, featured_video)
     
     try:
         # Connect to Gmail SMTP server
@@ -157,8 +166,12 @@ def send_email_with_articles(articles):
         logger.error(f"  • Error message: {str(e)}")
         return False
 
-def format_articles_for_email(articles):
+def format_articles_for_email(articles, featured_video=None):
     """Format articles for email HTML content with modern, sleek design"""
+    
+    # Generate video section HTML
+    video_html = format_video_for_email_html(featured_video) if featured_video else ""
+    
     html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -409,6 +422,8 @@ def format_articles_for_email(articles):
                     <h3>📊 {len(articles)} Articles This Week</h3>
                     <p>Curated from top aerospace and defense sources</p>
                 </div>
+                
+                {video_html}
     """
     
     for i, article in enumerate(articles, 1):
@@ -449,13 +464,18 @@ def format_articles_for_email(articles):
     
     return html_content
 
-def format_articles_for_text(articles):
+def format_articles_for_text(articles, featured_video=None):
     """Format articles for plain text email content"""
+    
+    # Generate video section text
+    video_text = format_video_for_email_text(featured_video) if featured_video else ""
+    
     text_content = f"""
 🛰️ AEROSPACE & DEFENSE NEWS
 Latest Articles - {datetime.now().strftime('%B %d, %Y')}
 {'=' * 50}
 
+{video_text}
 """
     
     for i, article in enumerate(articles, 1):

@@ -6,7 +6,7 @@ Command-line tool for managing newsletter subscribers
 
 import sys
 import argparse
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
 import json
 
 def main():
@@ -45,8 +45,8 @@ def main():
         parser.print_help()
         return
     
-    # Initialize email manager
-    manager = EmailManager()
+    # Initialize email manager (Firebase or JSON)
+    manager = create_email_manager()
     
     if args.command == 'subscribe':
         result = manager.subscribe(args.email, args.name)

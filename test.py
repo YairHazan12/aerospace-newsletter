@@ -19,7 +19,7 @@ from fetch_articles import (
     format_articles_for_text,
     send_email_with_articles
 )
-from email_manager import EmailManager
+from email_manager_factory import create_email_manager
 
 class TestNewsletter(unittest.TestCase):
     """Test cases for the newsletter functionality"""
@@ -105,14 +105,14 @@ class TestNewsletter(unittest.TestCase):
             'GMAIL_EMAIL': 'test@gmail.com',
             'GMAIL_APP_PASSWORD': 'test_password'
         }):
-            # Mock the EmailManager to return test subscribers
-            with patch('fetch_articles.EmailManager') as mock_email_manager:
+            # Mock the email manager factory to return test subscribers
+            with patch('fetch_articles.create_email_manager') as mock_factory:
                 mock_manager_instance = MagicMock()
                 mock_manager_instance.get_active_subscribers.return_value = [
                     {'email': 'test1@example.com', 'name': 'Test User 1'},
                     {'email': 'test2@example.com', 'name': 'Test User 2'}
                 ]
-                mock_email_manager.return_value = mock_manager_instance
+                mock_factory.return_value = mock_manager_instance
                 
                 with patch('fetch_articles.smtplib.SMTP') as mock_smtp:
                     mock_server = MagicMock()
@@ -143,11 +143,11 @@ class TestNewsletter(unittest.TestCase):
         print("🧪 Testing EmailManager...")
         
         # Test subscription
-        manager = EmailManager("test_subscribers.json")
+        manager = create_email_manager()
         result = manager.subscribe("test@example.com", "Test User")
         self.assertTrue(result['success'])
         
-        # Test duplicate subscription
+        # Test duplicate subscription (same manager instance)
         result2 = manager.subscribe("test@example.com", "Test User")
         self.assertFalse(result2['success'])
         
