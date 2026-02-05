@@ -7,6 +7,7 @@ Automated newsletter that fetches the latest aerospace and defense news and send
 ```
 aerospace_newsletter/
 ├── fetch_articles.py              # Main newsletter script
+├── video_fetcher.py              # YouTube video fetcher for featured videos
 ├── email_manager.py              # Email subscription management
 ├── signup_server.py              # Web interface server
 ├── manage_subscribers.py         # CLI management tool
@@ -55,6 +56,7 @@ aerospace_newsletter/
   - NASA Breaking News
   - DroneLife
   - MIT Drones News
+- **🎬 Featured Video**: Automatically includes a relevant, recent aerospace video from top YouTube channels (Everyday Astronaut, Scott Manley, NASASpaceflight, SpaceX, NASA, etc.)
 - Beautiful HTML email formatting
 - Automatic cloud-based delivery
 - Manual trigger capability
